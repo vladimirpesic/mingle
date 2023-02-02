@@ -1,0 +1,15 @@
+ngx-gallery {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+img {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+}
+
+.btn-group {
+    width: 350px;
+    bottom: 36px;
+}

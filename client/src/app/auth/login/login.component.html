@@ -1,0 +1,19 @@
+<div class="container">
+    <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && login()" autocomplete="off">
+        <div class="text-center mb-3">
+            <img class="my-3" src="assets/logo.png" alt="Mingle">
+        </div>
+        <app-text-input [formControl]='loginForm.controls["username"]' [label]='"Username"'></app-text-input>
+        <app-text-input [formControl]='loginForm.controls["password"]' [label]='"Password"' [type]='"password"'>
+        </app-text-input>
+        <div class="row" *ngIf="validationErrors.length > 0">
+            <ul class="text-danger">
+                <li *ngFor="let error of validationErrors">{{ error }}</li>
+            </ul>
+        </div>
+        <div class="text-center mb-5">
+            <button class="btn btn-primary mx-2" type="submit" [disabled]="!loginForm.valid">Login</button>
+            <button class="btn btn-default mx-2" type="button" (click)="cancel()">Cancel</button>
+        </div>
+    </form>
+</div>

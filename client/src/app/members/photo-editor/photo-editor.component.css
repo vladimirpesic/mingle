@@ -1,0 +1,34 @@
+.container {
+    width: 350px;
+}
+
+.table {
+    width: 320px;
+}
+
+.card {
+    width: 350px;
+}
+
+.nv-file-over {
+    border: dotted 3px red;
+}
+
+input[type=file] {
+    color: transparent;
+}
+
+.not-approved {
+    opacity: 0.2;
+}
+
+.img-wrapper {
+    position: relative;
+    width: 160px;
+}
+
+.img-text {
+    position: absolute;
+    text-align: center;
+    bottom: 50%;
+}

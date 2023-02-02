@@ -1,0 +1,39 @@
+<div>
+    <tabset #memberTabs>
+        <tab heading="About {{ member.knownAs }}" (selectTab)="onTabActivated($event)">
+            <div class="d-flex flex-wrap justify-content-evenly align-items-center mt-3">
+                <div>
+                    <img src="{{ member.photoUrl || './assets/user.png' }}" alt="{{ member.knownAs }}">
+                    <div class="btn-group d-flex">
+                        <button class="btn btn-primary" (click)="addLike(member)"><i class="fa fa-heart me-2"></i>Like</button>
+                        <button class="btn btn-success" (click)="selectTab(2)"><i class="fa fa-envelope me-2"></i>Message</button>
+                    </div>
+                    <div class="my-2" *ngIf="(presence.onlineUsers$ | async).includes(member.username)">
+                        <i class="fa fa-user-circle text-success"></i> Online now
+                    </div>
+                </div>
+                <div class="mx-3 my-3">
+                    <p><strong>City: </strong>{{ member.city }}</p>
+                    <p><strong>Country: </strong>{{ member.country }}</p>
+                    <p><strong>Age: </strong>{{ member.age }}</p>
+                    <p><strong>Last active: </strong>{{ member.lastActive | timeago }}</p>
+                    <p><strong>Member since: </strong>{{ member.created | date: "dd MMM yyyy" }}</p>
+                </div>
+            </div>
+            <h5>Description</h5>
+            <p>{{ member.introduction }}</p>
+            <h5>Interests</h5>
+            <p>{{ member.interests }}</p>
+            <h5>Looking for</h5>
+            <p>{{ member.lookingFor }}</p>
+        </tab>
+        <tab heading="Photos" (selectTab)="onTabActivated($event)">
+            <div class="d-flex justify-content-evenly align-items-center mt-3">
+                <ngx-gallery [options]="galleryOptions" [images]="galleryImages"></ngx-gallery>
+            </div>
+        </tab>
+        <tab heading="Messages" (selectTab)="onTabActivated($event)">
+            <app-member-messages [username]="member.username"></app-member-messages>
+        </tab>
+    </tabset>
+</div>

@@ -1,0 +1,32 @@
+<div class="container">
+    <form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off">
+        <div class="text-center mb-3">
+            <img class="my-3" src="assets/logo.png" alt="Mingle">
+        </div>
+        <div class="mb-3">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input me-1" value="male" formControlName="gender">Male
+            </label>
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input ms-3 me-1" value="female" formControlName="gender">Female
+            </label>
+        </div>
+        <app-text-input [formControl]='registerForm.controls["username"]' [label]='"Username"'></app-text-input>
+        <app-text-input [formControl]='registerForm.controls["knownAs"]' [label]='"Known As"'></app-text-input>
+        <app-date-input [formControl]='registerForm.controls["dateOfBirth"]' [label]='"Date of Birth"' [maxDate]="maxDate"></app-date-input>
+        <app-text-input [formControl]='registerForm.controls["city"]' [label]='"City"'></app-text-input>
+        <app-text-input [formControl]='registerForm.controls["country"]' [label]='"Country"'></app-text-input>
+        <app-text-input [formControl]='registerForm.controls["password"]' [label]='"Password"' [type]='"password"'></app-text-input>
+        <p><small>6-15 chars with uppercase letter and number</small></p>
+        <app-text-input [formControl]='registerForm.controls["confirmPassword"]' [label]='"Confirm Password"' [type]='"password"'></app-text-input>
+        <div class="row" *ngIf="validationErrors.length > 0">
+            <ul class="text-danger">
+                <li *ngFor="let error of validationErrors">{{ error }}</li>
+            </ul>
+        </div>
+        <div class="text-center mb-5">
+            <button class="btn btn-primary mx-2" type="submit" [disabled]="!registerForm.valid">Register</button>
+            <button class="btn btn-default mx-2" type="button" (click)="cancel()">Cancel</button>
+        </div>
+    </form>
+</div>

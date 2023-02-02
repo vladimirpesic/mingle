@@ -1,0 +1,19 @@
+.logo {
+    height: 38px;
+}
+
+.avatar {
+    display: inline;
+    height: 40px;
+}
+
+.dropdown-toggle, .dropdown-item {
+    cursor: pointer;
+}
+
+input {
+    width: 160px;
+    height: 40px;
+    border-radius: 5px;
+    margin-right: 8px;
+}

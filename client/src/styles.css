@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    overflow-x: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+.age-slider {
+    width: 300px;
+}
+.age-slider .ngx-slider .ngx-slider-bar {
+    height: 4px;
+}
+
+.age-slider .ngx-slider .ngx-slider-selection {
+    background: #593196;
+}
+
+.age-slider .ngx-slider .ngx-slider-pointer {
+    background-color: #009cdc;
+}
+
+.age-slider .ngx-slider .ngx-slider-pointer:after {
+    display: none;
+}
+
+.age-slider .ngx-slider .ngx-slider-limit {
+    display: none;
+}

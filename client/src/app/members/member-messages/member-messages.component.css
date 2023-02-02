@@ -1,0 +1,37 @@
+.card {
+    height: calc(100vh - 132px);
+    border: none;
+}
+
+.card-body {
+    overflow-y: scroll;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.card-body::-webkit-scrollbar {
+    display: none;
+}
+
+.chat {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chat li {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+}
+
+.rounded-circle {
+    max-height: 50px;
+}
+
+.card-footer {
+    background-color: white;
+    border-top: none;
+    bottom: 0px;
+    z-index: 1000;
+}
