@@ -20,14 +20,13 @@ public class BuggyController : BaseApiController
     {
         var thing = _context.Users.Find(-1);
         if (thing == null) return NotFound();
-        return Ok(thing);
+        return thing;
     }
 
     [HttpGet("server-error")]
     public ActionResult<string> GetServerError()
     {
         var thing = _context.Users.Find(-1);
-        // Calling a method on null value will generate "null reference exception"
         var thingToReturn = thing.ToString();
         return thingToReturn;
     }
@@ -35,6 +34,6 @@ public class BuggyController : BaseApiController
     [HttpGet("bad-request")]
     public ActionResult<string> GetBadRequest()
     {
-        return BadRequest("This request was really bad!");
+        return BadRequest("Really bad request!");
     }
 }

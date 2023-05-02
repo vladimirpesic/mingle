@@ -1,6 +1,5 @@
 namespace API.Controllers;
 
-[Authorize]
 public class MessagesController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -36,17 +35,17 @@ public class MessagesController : BaseApiController
 
         if (await _unitOfWork.Complete()) return Ok(_mapper.Map<MessageDto>(message));
 
-        return BadRequest("Sending message failed.");
+        return BadRequest("Failed to send message");
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUser([FromQuery] MessageParams messageParams)
+    public async Task<ActionResult<PagedList<MessageDto>>> GetMessagesForUser([FromQuery] MessageParams messageParams)
     {
         messageParams.Username = User.GetUsername();
 
         var messages = await _unitOfWork.MessageRepository.GetMessagesForUser(messageParams);
 
-        Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
+        Response.AddPaginationHeader(new PaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages));
 
         return messages;
     }
@@ -58,16 +57,16 @@ public class MessagesController : BaseApiController
 
         var message = await _unitOfWork.MessageRepository.GetMessage(id);
 
-        if (message.Sender.UserName != username && message.Recipient.UserName != username) return Unauthorized();
+        if (message.SenderUsername != username && message.RecipientUsername != username) return Unauthorized();
 
-        if (message.Sender.UserName == username) message.SenderDeleted = true;
+        if (message.SenderUsername == username) message.SenderDeleted = true;
 
-        if (message.Recipient.UserName == username) message.RecipientDeleted = true;
+        if (message.RecipientUsername == username) message.RecipientDeleted = true;
 
         if (message.SenderDeleted && message.RecipientDeleted) _unitOfWork.MessageRepository.DeleteMessage(message);
 
         if (await _unitOfWork.Complete()) return Ok();
 
-        return BadRequest("Problem deleting the message.");
+        return BadRequest("Problem deleting the message");
     }
 }

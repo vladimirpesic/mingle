@@ -17,8 +17,6 @@ public class AdminController : BaseApiController
     public async Task<ActionResult> GetUsersWithRoles()
     {
         var users = await _userManager.Users
-            .Include(r => r.UserRoles)
-            .ThenInclude(r => r.Role)
             .OrderBy(u => u.UserName)
             .Select(u => new
             {
@@ -35,21 +33,23 @@ public class AdminController : BaseApiController
     [HttpPost("edit-roles/{username}")]
     public async Task<ActionResult> EditRoles(string username, [FromQuery] string roles)
     {
+        if (string.IsNullOrEmpty(roles)) return BadRequest("You must select at least one role");
+
         var selectedRoles = roles.Split(",").ToArray();
 
         var user = await _userManager.FindByNameAsync(username);
 
-        if (user == null) return NotFound("Could not find user.");
+        if (user == null) return NotFound();
 
         var userRoles = await _userManager.GetRolesAsync(user);
 
         var result = await _userManager.AddToRolesAsync(user, selectedRoles.Except(userRoles));
 
-        if (!result.Succeeded) return BadRequest("Adding to roles failed.");
+        if (!result.Succeeded) return BadRequest("Adding to roles failed");
 
         result = await _userManager.RemoveFromRolesAsync(user, userRoles.Except(selectedRoles));
 
-        if (!result.Succeeded) return BadRequest("Removing from roles failed.");
+        if (!result.Succeeded) return BadRequest("Removing from roles failed");
 
         return Ok(await _userManager.GetRolesAsync(user));
     }
@@ -69,7 +69,7 @@ public class AdminController : BaseApiController
     {
         var photo = await _unitOfWork.PhotoRepository.GetPhotoById(photoId);
 
-        if (photo == null) return NotFound("Could not find photo");
+        if (photo == null) return NotFound();
 
         photo.IsApproved = true;
 
@@ -87,8 +87,6 @@ public class AdminController : BaseApiController
     public async Task<ActionResult> RejectPhoto(int photoId)
     {
         var photo = await _unitOfWork.PhotoRepository.GetPhotoById(photoId);
-
-        if (photo == null) return NotFound("Could not find photo");
 
         if (photo.PublicId != null)
         {

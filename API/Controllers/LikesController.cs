@@ -1,6 +1,5 @@
 namespace API.Controllers;
 
-[Authorize]
 public class LikesController : BaseApiController
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -22,7 +21,7 @@ public class LikesController : BaseApiController
 
         var userLike = await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
 
-        if (userLike != null) return BadRequest("You already like this member!");
+        if (userLike != null) return BadRequest("You already like this member");
 
         userLike = new UserLike
         {
@@ -34,16 +33,16 @@ public class LikesController : BaseApiController
 
         if (await _unitOfWork.Complete()) return Ok();
 
-        return BadRequest("Failed to like member.");
+        return BadRequest("Failed to like member");
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LikesDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
+    public async Task<ActionResult<PagedList<LikesDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
     {
         likesParams.UserId = User.GetUserId();
         var users = await _unitOfWork.LikesRepository.GetUserLikes(likesParams);
 
-        Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
+        Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages));
 
         return Ok(users);
     }

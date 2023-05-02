@@ -1,4 +1,3 @@
-// Starter API controller template
 namespace API.Controllers;
 
 [ServiceFilter(typeof(LogUserActivity))]

@@ -3,12 +3,10 @@ namespace API.Controllers;
 public class AccountController : BaseApiController
 {
     private readonly UserManager<AppUser> _userManager;
-    private readonly SignInManager<AppUser> _signInManager;
     private readonly IMapper _mapper;
     private readonly ITokenService _tokenService;
     public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService, IMapper mapper)
     {
-        _signInManager = signInManager;
         _userManager = userManager;
         _mapper = mapper;
         _tokenService = tokenService;
@@ -43,13 +41,13 @@ public class AccountController : BaseApiController
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
-        var user = await _userManager.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == loginDto.Username.ToLower());
+        var user = await _userManager.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.UserName == loginDto.Username);
 
         if (user == null) return Unauthorized("Invalid username");
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+        var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
 
-        if (!result.Succeeded) return Unauthorized();
+        if (!result) return Unauthorized("Invalid password");
 
         return new UserDto
         {
