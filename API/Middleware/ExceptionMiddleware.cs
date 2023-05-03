@@ -28,7 +28,7 @@ public class ExceptionMiddleware
             // Create response
             var response = _env.IsDevelopment()
                 ? new ApiException(context.Response.StatusCode, ex.Message, ex.StackTrace?.ToString())
-                : new ApiException(context.Response.StatusCode, "Internal Server Error");
+                : new ApiException(context.Response.StatusCode, ex.Message, "Internal Server Error");
             // Ensure proper JSON formatted response with camelCase naming
             var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
             var json = JsonSerializer.Serialize(response, options);
