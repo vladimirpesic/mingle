@@ -10,7 +10,7 @@ public class LogUserActivity : IAsyncActionFilter
 
         var userId = resultContext.HttpContext.User.GetUserId();
         // Access repository
-        var unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+        var unitOfWork = resultContext.HttpContext.RequestServices.GetRequiredService<IUnitOfWork>();
         // Get User object
         var user = await unitOfWork.UserRepository.GetUserByIdAsync(userId);
 

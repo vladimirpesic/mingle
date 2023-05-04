@@ -1,20 +1,42 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container (equivalent to ConfigureServices method in Startup.cs)
-builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddControllers();
-builder.Services.AddCors();
+builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
-builder.Services.AddSignalR();
-builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIv5", Version = "v1" }));
 
-// Configure the HTTP request pipeline (equivalent to Configure method in Startup.cs)
+var connString = "";
+if (builder.Environment.IsDevelopment()) connString = builder.Configuration.GetConnectionString("DefaultConnection");
+else
+{
+    // Use connection string provided at runtime by FlyIO.
+    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    // Parse connection URL to connection string for Npgsql
+    connUrl = connUrl.Replace("postgres://", string.Empty);
+    var pgUserPass = connUrl.Split("@")[0];
+    var pgHostPortDb = connUrl.Split("@")[1];
+    var pgHostPort = pgHostPortDb.Split("/")[0];
+    var pgDb = pgHostPortDb.Split("/")[1];
+    var pgUser = pgUserPass.Split(":")[0];
+    var pgPass = pgUserPass.Split(":")[1];
+    var pgHost = pgHostPort.Split(":")[0];
+    var pgPort = pgHostPort.Split(":")[1];
+
+    connString = $"Server={pgHost};Port={pgPort};User Id={pgUser};Password={pgPass};Database={pgDb};";
+}
+
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseNpgsql(connString);
+});
+
 var app = builder.Build();
-// Exception handling middleware always comes at the top of the middleware container
+
+// Configure the HTTP request pipeline (exception handling middleware always comes at the top of the middleware container)
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseHttpsRedirection();
+
 // CORS middleware must be called right after UseRouting; ordering is crucial
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200"));
+app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://localhost:4200"));
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseDefaultFiles();
@@ -24,8 +46,6 @@ app.MapHub<PresenceHub>("hubs/presence");
 app.MapHub<MessageHub>("hubs/message");
 app.MapFallbackToController("Index", "Fallback");
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 try
@@ -34,12 +54,13 @@ try
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
+    await Seed.ClearConnections(context);
     await Seed.SeedUsers(userManager, roleManager);
 }
 catch (Exception ex)
 {
-    var logger = services.GetRequiredService<ILogger<Program>>();
+    var logger = services.GetService<ILogger<Program>>();
     logger.LogError(ex, "An error occurred during migration");
 }
 
-await app.RunAsync();
+app.Run();

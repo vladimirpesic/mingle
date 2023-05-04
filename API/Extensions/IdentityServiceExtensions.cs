@@ -8,8 +8,6 @@ public static class IdentityServiceExtensions
         services.AddIdentityCore<AppUser>(options => options.Password.RequireNonAlphanumeric = false)
             .AddRoles<AppRole>()
             .AddRoleManager<RoleManager<AppRole>>()
-            .AddSignInManager<SignInManager<AppUser>>()
-            .AddRoleValidator<RoleValidator<AppRole>>()
             .AddEntityFrameworkStores<DataContext>();
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
