@@ -24,11 +24,12 @@
               "src/manifest.webmanifest"
             ],
             "styles": [
-              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "./node_modules/bootswatch/dist/pulse/bootstrap.css",
-              "./node_modules/font-awesome/css/font-awesome.css",
-              "./node_modules/ngx-toastr/toastr.css",
+              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/bootswatch/dist/pulse/bootstrap.css",
+              "node_modules/font-awesome/css/font-awesome.min.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "node_modules/ngx-spinner/animations/ball-pulse.css",
               "src/styles.css"
             ],
             "scripts": [],
@@ -41,12 +42,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumError": "4mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "4kb",
+                  "maximumError": "8kb"
                 }
               ],
               "fileReplacements": [
@@ -55,7 +56,15 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              }
             },
             "development": {
               "buildOptimizer": false,
