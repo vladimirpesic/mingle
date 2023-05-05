@@ -1,14 +1,13 @@
 namespace API.SignalR;
 
+[Authorize]
 public class MessageHub : Hub
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IHubContext<PresenceHub> _presenceHub;
-    private readonly PresenceTracker _tracker;
-    public MessageHub(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<PresenceHub> presenceHub, PresenceTracker tracker)
+    public MessageHub(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<PresenceHub> presenceHub)
     {
-        _tracker = tracker;
         _presenceHub = presenceHub;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
@@ -18,7 +17,7 @@ public class MessageHub : Hub
     {
         var httpContext = Context.GetHttpContext();
 
-        var otherUser = httpContext.Request.Query["user"].ToString();
+        var otherUser = httpContext.Request.Query["user"];
 
         var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
 
@@ -30,6 +29,8 @@ public class MessageHub : Hub
 
         var messages = await _unitOfWork.MessageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
 
+        var changes = _unitOfWork.HasChanges();
+
         if (_unitOfWork.HasChanges()) await _unitOfWork.Complete();
 
         await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
@@ -39,7 +40,7 @@ public class MessageHub : Hub
     {
         var group = await RemoveFromMessageGroup();
 
-        await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
+        await Clients.Group(group.Name).SendAsync("UpdatedGroup");
 
         await base.OnDisconnectedAsync(exception);
     }
@@ -54,7 +55,7 @@ public class MessageHub : Hub
 
         var recipient = await _unitOfWork.UserRepository.GetUserByUsernameAsync(createMessageDto.RecipientUsername);
 
-        if (recipient == null) throw new HubException("User not found.");
+        if (recipient == null) throw new HubException("User not found");
 
         var message = new Message
         {
@@ -75,7 +76,7 @@ public class MessageHub : Hub
         }
         else
         {
-            var connections = await _tracker.GetConnectionsForUser(recipient.UserName);
+            var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
 
             if (connections != null)
             {
@@ -107,7 +108,7 @@ public class MessageHub : Hub
 
         if (await _unitOfWork.Complete()) return group;
 
-        throw new HubException("Failed to join group.");
+        throw new HubException("Failed to join group");
     }
 
     private async Task<Group> RemoveFromMessageGroup()
@@ -120,7 +121,7 @@ public class MessageHub : Hub
 
         if (await _unitOfWork.Complete()) return group;
 
-        throw new HubException("Failed to remove from group.");
+        throw new HubException("Failed to remove from group");
     }
 
     private string GetGroupName(string caller, string other)

@@ -1,4 +1,5 @@
 namespace API.SignalR;
+
 public class PresenceTracker
 {
     // KEY: string Username, VALUE: List<string> ConnectionId (one user can have multiple active app connections)
@@ -8,7 +9,7 @@ public class PresenceTracker
     {
         bool isOnline = false;
 
-        lock (OnlineUsers)
+        lock(OnlineUsers)
         {
             if (OnlineUsers.ContainsKey(username))
             {
@@ -28,7 +29,7 @@ public class PresenceTracker
     {
         bool isOffline = false;
 
-        lock (OnlineUsers)
+        lock(OnlineUsers)
         {
             if (!OnlineUsers.ContainsKey(username)) return Task.FromResult(isOffline);
 
@@ -48,7 +49,7 @@ public class PresenceTracker
     {
         string[] onlineUsers;
 
-        lock (OnlineUsers)
+        lock(OnlineUsers)
         {
             onlineUsers = OnlineUsers.OrderBy(k => k.Key).Select(k => k.Key).ToArray();
         }
@@ -56,11 +57,11 @@ public class PresenceTracker
         return Task.FromResult(onlineUsers);
     }
 
-    public Task<List<string>> GetConnectionsForUser(string username)
+    public static Task<List<string>> GetConnectionsForUser(string username)
     {
         List<string> connectionIds;
 
-        lock (OnlineUsers)
+        lock(OnlineUsers)
         {
             connectionIds = OnlineUsers.GetValueOrDefault(username);
         }

@@ -11,6 +11,7 @@ public class TokenService : ITokenService
         _userManager = userManager;
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
     }
+
     public async Task<string> CreateToken(AppUser user)
     {
         var claims = new List<Claim>
@@ -28,7 +29,7 @@ public class TokenService : ITokenService
         var tokenDesciptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.Now.AddDays(7),
             SigningCredentials = creds
         };
 

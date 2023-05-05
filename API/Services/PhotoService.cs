@@ -19,7 +19,8 @@ public class PhotoService : IPhotoService
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+                Folder = "da-net7"
             };
             uploadResult = await _cloudinary.UploadAsync(uploadParams);
         }
@@ -30,8 +31,7 @@ public class PhotoService : IPhotoService
     public async Task<DeletionResult> DeletePhotoAsync(string publicId)
     {
         var deleteParams = new DeletionParams(publicId);
-        var result = await _cloudinary.DestroyAsync(deleteParams);
 
-        return result;
+        return await _cloudinary.DestroyAsync(deleteParams);        
     }
 }
