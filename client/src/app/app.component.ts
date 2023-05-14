@@ -10,20 +10,19 @@ import { PresenceService } from './_services/presence.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'dooble';
-  users: any;
+  title = 'mingle';
 
   constructor(private accountService: AccountService, private presence: PresenceService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.setCurrentUser();
   }
 
   setCurrentUser() {
-    const user: User = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      this.accountService.setCurrentUser(user);
-      this.presence.createHubConnection(user);
-    }
+    const userString = localStorage.getItem('user');
+    if (!userString) return;
+    const user: User = JSON.parse(userString);
+    this.accountService.setCurrentUser(user);
+    this.presence.createHubConnection(user);
   }
 }
